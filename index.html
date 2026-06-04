@@ -133,8 +133,30 @@
     </script>
 </head>
 <body class="font-body-md text-on-surface">
+<div id="loginScreen" class="fixed inset-0 z-50 bg-surface-deep/95 flex items-center justify-center p-6">
+    <div class="w-full max-w-md rounded-[28px] border border-outline-variant/30 bg-surface-card/95 backdrop-blur-xl p-8 shadow-[0_20px_60px_rgba(0,0,0,0.35)]">
+        <div class="mb-6 text-center">
+            <p class="text-xs uppercase tracking-[0.26em] text-primary font-bold">Greentech</p>
+            <h1 class="mt-3 text-3xl font-bold text-on-surface">Acceso al sistema</h1>
+            <p class="mt-2 text-sm text-on-surface-variant">Ingresa con tu usuario autorizado para continuar.</p>
+        </div>
+        <form id="loginForm" class="space-y-4">
+            <div>
+                <label for="loginUser" class="block text-sm text-on-surface-variant mb-2">Usuario</label>
+                <input id="loginUser" name="loginUser" required autocomplete="username" class="w-full rounded-2xl border border-outline-variant/40 bg-surface-container-lowest px-4 py-3 text-body-md text-on-surface focus:border-primary focus:ring-0" placeholder="Robinson" />
+            </div>
+            <div>
+                <label for="loginPassword" class="block text-sm text-on-surface-variant mb-2">Contraseña</label>
+                <input id="loginPassword" name="loginPassword" type="password" required autocomplete="current-password" class="w-full rounded-2xl border border-outline-variant/40 bg-surface-container-lowest px-4 py-3 text-body-md text-on-surface focus:border-primary focus:ring-0" placeholder="•••••••••" />
+            </div>
+            <p id="loginError" class="hidden text-sm text-error">Usuario o contraseña incorrectos.</p>
+            <button type="submit" class="w-full rounded-2xl bg-primary px-4 py-3 text-sm font-bold uppercase tracking-[0.18em] text-on-primary shadow-[0_10px_30px_rgba(98,223,125,0.24)] hover:brightness-110">Ingresar</button>
+        </form>
+        <p class="mt-6 text-center text-xs text-on-surface-variant">Usuario: Robinson | Contraseña: admin123</p>
+    </div>
+</div>
 <!-- Sidebar Navigation Shell -->
-<aside class="hidden md:flex flex-col h-screen w-64 fixed left-0 top-0 bg-surface-deep z-50 p-4">
+<aside hidden class="hidden md:flex flex-col h-screen w-64 fixed left-0 top-0 bg-surface-deep z-50 p-4">
 <div class="flex items-center justify-center mb-6">
 <img src="GreenTech.png" alt="Greentech logo" class="w-20 h-20 object-contain rounded-lg" />
 </div>
@@ -177,7 +199,7 @@
 </div>
 </aside>
 <!-- Main Content Canvas -->
-<main class="md:ml-64 min-h-screen bg-surface-deep">
+<main hidden class="md:ml-64 min-h-screen bg-surface-deep">
 <!-- Header / Top Bar -->
 <header class="sticky top-0 z-40 bg-surface/80 backdrop-blur-md flex justify-between items-center px-container-margin py-4 w-full">
 <div class="flex items-center gap-4">
@@ -614,6 +636,50 @@
                 reports: 'Informes científicos',
                 sensors: 'Malla de sensores'
             };
+
+            const LOGIN_USERNAME = 'Robinson';
+            const LOGIN_PASSWORD = 'admin123';
+            const loginScreen = document.getElementById('loginScreen');
+            const loginForm = document.getElementById('loginForm');
+            const loginError = document.getElementById('loginError');
+            const pageSidebar = document.querySelector('aside');
+            const pageMain = document.querySelector('main');
+
+            function showApp() {
+                if (pageSidebar) pageSidebar.removeAttribute('hidden');
+                if (pageMain) pageMain.removeAttribute('hidden');
+                if (loginScreen) loginScreen.classList.add('hidden');
+            }
+
+            function showLogin() {
+                if (pageSidebar) pageSidebar.setAttribute('hidden', '');
+                if (pageMain) pageMain.setAttribute('hidden', '');
+                if (loginScreen) loginScreen.classList.remove('hidden');
+            }
+
+            function handleLoginSubmit(event) {
+                event.preventDefault();
+                const username = document.getElementById('loginUser')?.value.trim();
+                const password = document.getElementById('loginPassword')?.value;
+                if (username === LOGIN_USERNAME && password === LOGIN_PASSWORD) {
+                    localStorage.setItem('greentechLoggedIn', 'true');
+                    if (loginError) loginError.classList.add('hidden');
+                    showApp();
+                    return;
+                }
+                if (loginError) loginError.classList.remove('hidden');
+            }
+
+            if (loginForm) {
+                loginForm.addEventListener('submit', handleLoginSubmit);
+            }
+
+            const isAuthenticated = localStorage.getItem('greentechLoggedIn') === 'true';
+            if (isAuthenticated) {
+                showApp();
+            } else {
+                showLogin();
+            }
 
             function setActiveTab(tabId, state) {
                 if (!tabId) return;
