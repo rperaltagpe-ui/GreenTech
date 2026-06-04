@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Greentech | Control de Misión Amazon</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;900&amp;family=JetBrains+Mono:wght@600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            background-color: #020617;
+            color: #dae2fd;
+        }
+        .glass-panel {
+            backdrop-filter: blur(12px);
+            background: rgba(30, 41, 59, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "inverse-surface": "#dae2fd",
+                    "tertiary-fixed-dim": "#ffb4ac",
+                    "on-error": "#690005",
+                    "secondary-container": "#00a6e0",
+                    "surface-container": "#171f33",
+                    "on-primary": "#003914",
+                    "on-surface": "#dae2fd",
+                    "surface-deep": "#020617",
+                    "outline": "#879485",
+                    "on-primary-container": "#003111",
+                    "primary-container": "#1ca64d",
+                    "on-secondary": "#00354a",
+                    "emergency-red-border": "#ff0000",
+                    "primary": "#62df7d",
+                    "secondary-fixed": "#c4e7ff",
+                    "secondary-fixed-dim": "#7bd0ff",
+                    "surface-container-high": "#222a3d",
+                    "on-secondary-fixed-variant": "#004c69",
+                    "surface-container-highest": "#2d3449",
+                    "primary-fixed": "#7ffc97",
+                    "surface-tint": "#62df7d",
+                    "inverse-on-surface": "#283044",
+                    "on-primary-fixed-variant": "#005320",
+                    "tertiary-container": "#ff544d",
+                    "on-background": "#dae2fd",
+                    "primary-fixed-dim": "#62df7d",
+                    "on-tertiary": "#690007",
+                    "tertiary": "#ffb4ac",
+                    "surface-variant": "#2d3449",
+                    "error-container": "#93000a",
+                    "on-tertiary-container": "#5c0005",
+                    "surface-card": "#1e293b",
+                    "data-white": "#ffffff",
+                    "on-tertiary-fixed": "#410003",
+                    "background": "#0b1326",
+                    "on-secondary-container": "#00374d",
+                    "on-error-container": "#ffdad6",
+                    "on-secondary-fixed": "#001e2c",
+                    "surface": "#0b1326",
+                    "error": "#ffb4ab",
+                    "surface-dim": "#0b1326",
+                    "inverse-primary": "#006e2d",
+                    "surface-container-low": "#131b2e",
+                    "on-surface-variant": "#bdcaba",
+                    "tertiary-fixed": "#ffdad6",
+                    "on-primary-fixed": "#002109",
+                    "on-tertiary-fixed-variant": "#93000e",
+                    "secondary": "#7bd0ff",
+                    "outline-variant": "#3e4a3d",
+                    "surface-container-lowest": "#060e20",
+                    "surface-bright": "#31394d"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "container-margin": "24px",
+                    "gutter": "16px",
+                    "stack-md": "16px",
+                    "stack-sm": "8px",
+                    "card-padding": "20px",
+                    "input-padding": "12px",
+                    "section-gap": "40px"
+            },
+            "fontFamily": {
+                    "body-md": ["Hanken Grotesk"],
+                    "headline-lg-mobile": ["Hanken Grotesk"],
+                    "data-display": ["JetBrains Mono"],
+                    "label-sm": ["Hanken Grotesk"],
+                    "body-lg": ["Hanken Grotesk"],
+                    "headline-md": ["Hanken Grotesk"],
+                    "headline-lg": ["Hanken Grotesk"],
+                    "label-caps": ["JetBrains Mono"],
+                    "headline-sm": ["Hanken Grotesk"]
+            },
+            "fontSize": {
+                    "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                    "data-display": ["28px", {"lineHeight": "32px", "fontWeight": "700"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                    "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "headline-sm": ["18px", {"lineHeight": "24px", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+</head>
+<body class="font-body-md text-on-surface">
+<!-- Sidebar Navigation Shell -->
+<aside class="hidden md:flex flex-col h-screen w-64 fixed left-0 top-0 bg-surface-deep z-50 p-4">
+<div class="flex items-center justify-center mb-6">
+<img src="GreenTech.png" alt="Greentech logo" class="w-20 h-20 object-contain rounded-lg" />
+</div>
+<nav class="flex-1 space-y-1">
+<!-- Active State Logic applied to Dashboard -->
+<a data-tab="dashboard" class="flex items-center gap-3 px-4 py-3 text-primary font-bold bg-surface-container-high rounded-lg transition-transform active:translate-x-1" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-label-caps text-label-caps">Tablero</span>
+</a>
+<a data-tab="map" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest transition-all duration-150 active:translate-x-1" href="#">
+<span class="material-symbols-outlined" data-icon="map">map</span>
+<span class="font-label-caps text-label-caps">Mapa Ecológico</span>
+</a>
+<a data-tab="alerts" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest transition-all duration-150 active:translate-x-1" href="#">
+<span class="material-symbols-outlined" data-icon="warning">warning</span>
+<span class="font-label-caps text-label-caps">Centro de alertas</span>
+</a>
+<a data-tab="reports" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest transition-all duration-150 active:translate-x-1" href="#">
+<span class="material-symbols-outlined" data-icon="assessment">assessment</span>
+<span class="font-label-caps text-label-caps">Informes científicos</span>
+</a>
+<a data-tab="sensors" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest transition-all duration-150 active:translate-x-1" href="#">
+<span class="material-symbols-outlined" data-icon="sensors">sensors</span>
+<span class="font-label-caps text-label-caps">Malla de sensores</span>
+</a>
+</nav>
+<div class="mt-auto pt-6 border-t border-outline-variant/30 space-y-1">
+<button id="btn-send-alerts" class="w-full bg-primary text-on-primary font-bold py-3 rounded-lg flex items-center justify-center gap-2 mb-4 hover:brightness-110 transition-all active:scale-95">
+<span class="material-symbols-outlined text-[20px]">send</span>
+<span class="font-label-caps text-label-caps">Enviar alertas</span>
+</button>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest transition-all duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+<span class="font-label-caps text-label-caps">Soporte</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest transition-all duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="account_circle">account_circle</span>
+<span class="font-label-caps text-label-caps">Cuenta</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="md:ml-64 min-h-screen bg-surface-deep">
+<!-- Header / Top Bar -->
+<header class="sticky top-0 z-40 bg-surface/80 backdrop-blur-md flex justify-between items-center px-container-margin py-4 w-full">
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-3">
+<img src="GreenTech.png" alt="Greentech logo" class="h-10 w-10 object-contain" />
+<h2 id="pageTitle" class="font-headline-md text-headline-md font-bold text-primary">Control de Misión</h2>
+</div>
+<div class="hidden sm:flex bg-surface-container-low rounded-full px-4 py-1.5 items-center gap-2 border border-outline-variant/20">
+<span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+<span class="font-label-caps text-label-caps text-[10px]">En vivo: Iquitos, Loreto</span>
+</div>
+</div>
+<div class="flex items-center gap-gutter">
+<div class="relative group hidden lg:block">
+<span class="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-on-surface-variant text-[20px]">search</span>
+<input id="missionSearch" class="bg-surface-container-low border border-outline-variant/30 rounded-lg pl-10 pr-4 py-2 text-body-md focus:border-primary focus:ring-0 transition-all w-64" placeholder="Buscar nodos de misión..." type="text"/>
+</div>
+<div class="flex items-center gap-2">
+<button class="p-2 text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="p-2 text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+<div class="w-10 h-10 rounded-full bg-surface-container-high border-2 border-primary/20 overflow-hidden flex items-center justify-center">
+<img alt="User profile" class="w-full h-full object-cover" data-alt="A professional headshot of a technical lead working in environmental conservation. The subject is a man with a focused expression, wearing a clean, modern navy blue tactical shirt. He is set against a blurred background of a high-tech control room with glowing green data screens. The lighting is sophisticated and cinematic, highlighting his determined look for a mission-control environment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDvxN_ryZjbBNe49vhWpDs3r2h8n9ysf98MCRh3_yCNufa7Akhx79n5w8aJVaWur35EBshpWrNLsvOWnW5b8aZAbhe2NUvmsaHEB_XH_FcezpUEnuYHk82NgGR2iTHiJZRh3skUv3mwYcwCIKyzfBqTvx_X1z3phiMDr2GqRGXoEBf8uezbavc7WDTKxHv5EFcKak8HD3CDRsgbHOmUbgM9oNm_n2RTRLjPHTSRNGMvx8bn9zz1sOyc3paq2HNg25IabQWYcjovEH0"/>
+</div>
+</div>
+</div>
+</header>
+<!-- Dashboard Content -->
+<div id="mainContent" class="px-container-margin py-stack-md space-y-gutter">
+<section id="tab-dashboard" class="tab-panel">
+<!-- KPI Grid -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-gutter">
+<!-- KPI 1 -->
+<div class="bg-surface-card p-card-padding rounded-lg border border-outline-variant/10 group hover:border-primary/40 transition-all">
+<div class="flex justify-between items-start mb-4">
+<span class="font-label-caps text-label-caps text-on-surface-variant">Deforestación ha</span>
+<div class="p-2 rounded bg-tertiary-container/10 text-tertiary">
+<span class="material-symbols-outlined text-[20px]">trending_up</span>
+</div>
+</div>
+<div class="flex items-baseline gap-2">
+<span id="kpi-deforestation" class="font-data-display text-data-display text-primary">1,248</span>
+<span id="kpi-deforestation-change" class="text-tertiary text-label-sm font-label-sm">+12% vs LY</span>
+</div>
+<div class="mt-4 w-full bg-surface-container-lowest h-1 rounded-full overflow-hidden">
+<div id="kpi-deforestation-progress" class="bg-tertiary h-full transition-all duration-1000" style="width: 78%"></div>
+</div>
+</div>
+<!-- KPI 2 -->
+<div class="bg-surface-card p-card-padding rounded-lg border border-outline-variant/10 group hover:border-primary/40 transition-all">
+<div class="flex justify-between items-start mb-4">
+<span class="font-label-caps text-label-caps text-on-surface-variant">Alertas activas</span>
+<div class="p-2 rounded bg-error-container/10 text-error">
+<span class="material-symbols-outlined text-[20px]">emergency</span>
+</div>
+</div>
+<div class="flex items-baseline gap-2">
+<span id="kpi-active-alerts" class="font-data-display text-data-display text-data-white">42</span>
+<span class="text-on-surface-variant text-label-sm font-label-sm">In progress</span>
+</div>
+<div class="mt-4 flex gap-1">
+<div class="h-1 flex-1 bg-error rounded-full"></div>
+<div class="h-1 flex-1 bg-error rounded-full"></div>
+<div class="h-1 flex-1 bg-surface-container-lowest rounded-full"></div>
+<div class="h-1 flex-1 bg-surface-container-lowest rounded-full"></div>
+</div>
+</div>
+<!-- KPI 3 -->
+<div class="bg-surface-card p-card-padding rounded-lg border border-outline-variant/10 group hover:border-primary/40 transition-all">
+<div class="flex justify-between items-start mb-4">
+<span class="font-label-caps text-label-caps text-on-surface-variant">Sensores en línea</span>
+<div class="p-2 rounded bg-primary-container/10 text-primary">
+<span class="material-symbols-outlined text-[20px]">wifi_tethering</span>
+</div>
+</div>
+<div class="flex items-baseline gap-2">
+<span id="kpi-sensors-online" class="font-data-display text-data-display text-primary">99.2%</span>
+<span class="text-primary text-label-sm font-label-sm">Stable</span>
+</div>
+<p class="text-[10px] font-label-caps text-on-surface-variant mt-4">8,402 ACTIVE NODES</p>
+</div>
+<!-- KPI 4 -->
+<div class="bg-surface-card p-card-padding rounded-lg border border-outline-variant/10 group hover:border-primary/40 transition-all">
+<div class="flex justify-between items-start mb-4">
+<span class="font-label-caps text-label-caps text-on-surface-variant">Secuestro de carbono</span>
+<div class="p-2 rounded bg-secondary-container/10 text-secondary">
+<span class="material-symbols-outlined text-[20px]">forest</span>
+</div>
+</div>
+<div class="flex items-baseline gap-2">
+<span id="kpi-carbon-sequestration" class="font-data-display text-data-display text-secondary">4.2k</span>
+<span class="text-on-surface-variant text-label-sm font-label-sm">Mt CO2e</span>
+</div>
+<div class="mt-4 flex items-center gap-1 text-[10px] font-label-caps text-primary">
+<span class="material-symbols-outlined text-[14px]">check_circle</span>
+                        MEETS TARGET
+                    </div>
+</div>
+</div>
+<!-- Main Analytics & Feed Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+<!-- Chart Section -->
+<div class="lg:col-span-8 bg-surface-card rounded-lg border border-outline-variant/10 p-card-padding flex flex-col h-[450px]">
+<div class="flex justify-between items-center mb-6">
+<div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Informe semanal de impacto</h3>
+<p class="text-body-md text-on-surface-variant">Incidentes de deforestación y esfuerzos de mitigación</p>
+</div>
+<div class="flex bg-surface-container-lowest rounded-lg p-1">
+<button class="px-3 py-1 text-label-sm font-label-sm bg-surface-container-high text-primary rounded shadow-sm">INCIDENTES</button>
+<button class="px-3 py-1 text-label-sm font-label-sm text-on-surface-variant hover:text-on-surface">MITIGADOS</button>
+</div>
+</div>
+<div class="flex-1 min-h-0">
+<canvas id="impactChart"></canvas>
+</div>
+</div>
+<!-- Recent Alerts Feed -->
+<div class="lg:col-span-4 flex flex-col gap-gutter">
+<div class="bg-surface-card rounded-lg border border-outline-variant/10 p-card-padding flex-1 flex flex-col">
+<div class="flex justify-between items-center mb-6">
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Alertas recientes</h3>
+<div class="flex items-center gap-2">
+<button id="btn-refresh-data" class="text-primary text-label-sm font-label-sm hover:underline">Simular actualización</button>
+<button id="btn-reset-data" class="text-on-surface-variant text-label-sm font-label-sm hover:text-primary">Reiniciar datos</button>
+</div>
+</div>
+<div id="dashboardAlertsContainer" class="space-y-4 overflow-y-auto no-scrollbar max-h-[350px]"></div>
+</div>
+</div>
+</div>
+<!-- Satellite View Mini Map & Regional Stats -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-gutter">
+<div class="lg:col-span-2 relative h-80 rounded-lg overflow-hidden border border-outline-variant/10">
+<img class="w-full h-full object-cover grayscale-[0.5] contrast-[1.2]" data-alt="A top-down satellite view of the lush Amazon rainforest, displaying dense canopies of various greens. In certain areas, there are sharp, geometric clearings indicating deforestation, highlighted with faint, glowing digital overlays in neon red. The lighting is bright daylight, and the aesthetic is clean, technical, and reminiscent of a high-end environmental monitoring dashboard's map interface." data-location="Amazon Rainforest" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAmDFOVKJeXC8JhB9Sgte3W5r6gy3i55auR8hwrdrfufExOiBnb-hXQqb8R6EvzlY1RfAfGo8TJBmmdM1fF3XXJIfMAe6soLU6P5CdhWgd5iJfIOc3Z4Az2wzn6OLbmjoQP2hQo9LkhLj2HqKvJHn-bX66Gv5lLE1gsczXTa54A4EaN3hoz6ChgUPdNkQKzruLfQ-NwP7_riIKMNjBVg5Kd9Zuxyd8UaEJ_eG2KCylyqnxAfkChjsfcZLP4M8nUmVrLx5XQAagQIpc"/>
+<div class="absolute inset-0 bg-gradient-to-t from-surface-deep/80 to-transparent"></div>
+<div class="absolute top-4 left-4 glass-panel px-3 py-1.5 rounded-lg flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[18px]">satellite_alt</span>
+<span class="font-label-caps text-label-caps text-on-surface text-[10px]">Transmisión satelital en tiempo real</span>
+</div>
+<div class="absolute bottom-4 left-4 right-4 flex justify-between items-end">
+<div class="glass-panel p-3 rounded-lg">
+<h4 class="font-label-caps text-label-caps text-on-surface-variant text-[10px]">SECTOR OBJETIVO</h4>
+<p class="font-headline-sm text-headline-sm text-on-surface">Iquitos Norte 04</p>
+</div>
+<button class="bg-primary hover:brightness-110 text-on-primary font-bold px-6 py-2 rounded-lg font-label-caps text-label-caps transition-all">Ampliar mapa</button>
+</div>
+</div>
+<div class="bg-surface-card rounded-lg border border-outline-variant/10 p-card-padding">
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb-6">Nivel de riesgo regional</h3>
+<div class="space-y-6">
+<div>
+<div class="flex justify-between mb-2">
+<span class="font-label-caps text-label-caps text-on-surface-variant">RIESGO DE TALA</span>
+<span class="text-primary font-bold">LOW</span>
+</div>
+<div class="w-full bg-surface-container-lowest h-2 rounded-full">
+<div class="bg-primary h-full w-[15%] rounded-full"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between mb-2">
+<span class="font-label-caps text-label-caps text-on-surface-variant">EXPANSIÓN AGRÍCOLA</span>
+<span class="text-tertiary font-bold">MODERATE</span>
+</div>
+<div class="w-full bg-surface-container-lowest h-2 rounded-full">
+<div class="bg-tertiary h-full w-[45%] rounded-full"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between mb-2">
+<span class="font-label-caps text-label-caps text-on-surface-variant">RIESGO DE INCENDIOS</span>
+<span class="text-error font-bold">CRITICAL</span>
+</div>
+<div class="w-full bg-surface-container-lowest h-2 rounded-full">
+<div class="bg-error h-full w-[85%] rounded-full shadow-[0_0_10px_rgba(255,0,0,0.4)]"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="tab-map" class="hidden tab-panel">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+<div class="lg:col-span-8 bg-surface-card rounded-lg border border-outline-variant/10 p-card-padding">
+<div class="flex justify-between items-center mb-6">
+<div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Mapa Ecológico</h3>
+<p class="text-body-md text-on-surface-variant">Vista satelital y análisis de zonas sensibles dentro de la región.</p>
+</div>
+<button class="px-3 py-1 text-label-sm font-label-sm bg-surface-container-high text-primary rounded shadow-sm">VER CAPAS</button>
+</div>
+<div class="relative h-[420px] rounded-lg overflow-hidden border border-outline-variant/10 bg-surface-container-lowest">
+<div id="leafletMap" class="h-full w-full"></div>
+<div class="absolute inset-0 bg-gradient-to-t from-surface-deep/80 to-transparent pointer-events-none"></div>
+<div class="absolute top-4 left-4 glass-panel px-3 py-1.5 rounded-lg flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[18px]">satellite_alt</span>
+<span class="font-label-caps text-label-caps text-on-surface text-[10px]">Transmisión satelital en tiempo real</span>
+</div>
+</div>
+</div>
+<div class="lg:col-span-4 bg-surface-card rounded-lg border border-outline-variant/10 p-card-padding space-y-6">
+<div>
+<h4 class="font-label-caps text-label-caps text-primary">Sector monitoreado</h4>
+<p class="font-headline-sm text-headline-sm text-on-surface">Iquitos Norte 04</p>
+</div>
+<div>
+<div class="flex justify-between mb-2">
+<span class="font-label-caps text-label-caps text-on-surface-variant">Cobertura de bosque</span>
+<span class="text-primary font-bold">82%</span>
+</div>
+<div class="w-full bg-surface-container-lowest h-2 rounded-full">
+<div class="bg-primary h-full w-[82%] rounded-full"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between mb-2">
+<span class="font-label-caps text-label-caps text-on-surface-variant">Incidentes actuales</span>
+<span class="text-error font-bold">6</span>
+</div>
+<div class="w-full bg-surface-container-lowest h-2 rounded-full">
+<div class="bg-error h-full w-[45%] rounded-full"></div>
+</div>
+</div>
+<div class="text-label-sm text-on-surface-variant">Nanay e Itaya son las zonas con mayor actividad registrada en las últimas 24 horas.</div>
+</div>
+</div>
+</section>
+<section id="tab-alerts" class="hidden tab-panel">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+<div class="lg:col-span-8 bg-surface-card rounded-lg border border-outline-variant/10 p-card-padding">
+<div class="flex justify-between items-center mb-6">
+<div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Centro de alertas</h3>
+<p class="text-body-md text-on-surface-variant">Supervisa eventos críticos y responde a las notificaciones más recientes.</p>
+</div>
+<div class="flex items-center gap-2">
+<button id="btn-refresh-data" class="text-primary text-label-sm font-label-sm hover:underline">Simular actualización</button>
+<button id="btn-reset-data" class="text-on-surface-variant text-label-sm font-label-sm hover:text-primary">Reiniciar datos</button>
+</div>
+</div>
+<div id="alertsContainer" class="space-y-4 overflow-y-auto no-scrollbar max-h-[420px]">
+    <div class="rounded-lg bg-surface-container-low/50 p-4 text-on-surface-variant">
+        Supervisa eventos críticos y responde a las notificaciones más recientes.
+    </div>
+</div>
+</div>
+<div class="lg:col-span-4 bg-surface-card rounded-lg border border-outline-variant/10 p-card-padding space-y-6">
+<div>
+<h4 class="font-label-caps text-label-caps text-primary">Resumen de alertas</h4>
+<ul class="space-y-3 text-body-md text-on-surface-variant">
+<li>6 alertas críticas emitidas en las últimas 3 horas.</li>
+<li>4 sensores requieren intervención técnica.</li>
+<li>2 incidentes de baja humedad están siendo monitorizados.</li>
+</ul>
+</div>
+<div class="bg-surface-container-lowest rounded-lg p-4">
+<p class="font-label-caps text-label-caps text-on-surface-variant mb-3">Recomendación</p>
+<p class="text-body-md text-on-surface">Aumentar el patrullaje dron en las zonas con mayor calor y revisar el estado de las antenas de X-Alpha.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="tab-reports" class="hidden tab-panel">
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-gutter">
+<div class="lg:col-span-2 bg-surface-card rounded-lg border border-outline-variant/10 p-card-padding">
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb-6">Informes científicos</h3>
+<div class="space-y-6">
+<div class="bg-surface-container-lowest rounded-lg p-4">
+<h4 class="font-label-caps text-label-caps text-primary mb-2">Calidad del agua</h4>
+<p class="text-body-md text-on-surface-variant">El último muestreo muestra niveles normales de pH en los ríos del sector norte.</p>
+</div>
+<div class="bg-surface-container-lowest rounded-lg p-4">
+<h4 class="font-label-caps text-label-caps text-primary mb-2">Biodiversidad</h4>
+<p class="text-body-md text-on-surface-variant">Incremento observado de aves migratorias tras el cese de actividades de tala en el corredor ecológico.</p>
+</div>
+<div class="bg-surface-container-lowest rounded-lg p-4">
+<h4 class="font-label-caps text-label-caps text-primary mb-2">Suelo</h4>
+<p class="text-body-md text-on-surface-variant">Monitoreo de humedad revela suelo estable con ligera desecación en el sector sur.</p>
+</div>
+</div>
+</div>
+<div class="bg-surface-card rounded-lg border border-outline-variant/10 p-card-padding space-y-6">
+<h4 class="font-label-caps text-label-caps text-primary">Descargas</h4>
+<ul class="space-y-3 text-body-md text-on-surface-variant">
+<li><a class="text-primary hover:underline" href="estudio%20Iquitos%20diciembre%202009.pdf" target="_blank" download>Estudio Iquitos diciembre 2009</a></li>
+<li><a class="text-primary hover:underline" href="Informe%20semanal%20de%20impacto.pdf" target="_blank" download>Informe semanal de impacto</a></li>
+<li><a class="text-primary hover:underline" href="Reporte%20de%20sensores.pdf" target="_blank" download>Reporte de sensores</a></li>
+<li><a class="text-primary hover:underline" href="Resumen%20de%20alertas.pdf" target="_blank" download>Resumen de alertas</a></li>
+</ul>
+</div>
+</div>
+</section>
+<section id="tab-sensors" class="hidden tab-panel">
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-gutter">
+<div class="lg:col-span-2 bg-surface-card rounded-lg border border-outline-variant/10 p-card-padding">
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb-6">Malla de sensores</h3>
+<div class="space-y-6">
+<div class="bg-surface-container-lowest rounded-lg p-4">
+<p class="font-label-caps text-label-caps text-primary mb-2">Sensores activos</p>
+<p class="text-body-md text-on-surface-variant">8,402 nodos monitoreando temperatura, humedad, y calidad del aire en tiempo real.</p>
+</div>
+<div class="bg-surface-container-lowest rounded-lg p-4">
+<p class="font-label-caps text-label-caps text-primary mb-2">Alertas de señal</p>
+<p class="text-body-md text-on-surface-variant">90% de los enlaces presentan latencia estable; 3 dispositivos requieren revisión.</p>
+</div>
+<div class="bg-surface-container-lowest rounded-lg p-4">
+<p class="font-label-caps text-label-caps text-primary mb-2">Tasa de respuesta</p>
+<p class="text-body-md text-on-surface-variant">La malla responde en menos de 1.2 segundos a las solicitudes de telemetría.</p>
+</div>
+</div>
+</div>
+<div class="bg-surface-card rounded-lg border border-outline-variant/10 p-card-padding space-y-6">
+<h4 class="font-label-caps text-label-caps text-primary">Estado del enlace</h4>
+<div class="text-body-md text-on-surface-variant">
+<p class="mb-3">Red satelital: estable.</p>
+<p class="mb-3">Sensores offline: 5.</p>
+<p class="mb-3">Nodo con mayor latencia: Sector J-9.</p>
+</div>
+</div>
+</div>
+</section>
+</div>
+<!-- Footer Shell -->
+<footer class="w-full py-section-gap bg-surface-container-lowest border-t border-outline-variant/10 mt-12">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-gutter px-container-margin max-w-7xl mx-auto">
+<div class="space-y-4">
+<h4 class="font-headline-sm text-headline-sm font-bold text-on-surface">Greentech</h4>
+<p class="text-body-md text-on-surface-variant opacity-80">Impulsando la conservación con telemetría avanzada y monitoreo satelital autónomo. Protegiendo los biomas más críticos.</p>
+</div>
+<div class="space-y-3">
+<h5 class="font-label-caps text-label-caps text-primary">Sistema</h5>
+<ul class="space-y-2">
+<li><a class="text-on-surface-variant hover:text-primary transition-colors" href="#">Documentación de API</a></li>
+<li><a class="text-on-surface-variant hover:text-primary transition-colors" href="#">Estado de la red de sensores</a></li>
+<li><a class="text-on-surface-variant hover:text-primary transition-colors" href="#">Constelación satelital</a></li>
+</ul>
+</div>
+<div class="space-y-3">
+<h5 class="font-label-caps text-label-caps text-primary">Cumplimiento</h5>
+<ul class="space-y-2">
+<li><a class="text-on-surface-variant hover:text-primary transition-colors" href="#">Política de privacidad</a></li>
+<li><a class="text-on-surface-variant hover:text-primary transition-colors" href="#">Términos de servicio</a></li>
+<li><a class="text-on-surface-variant hover:text-primary transition-colors" href="#">Ética ambiental</a></li>
+</ul>
+</div>
+<div class="space-y-3">
+<h5 class="font-label-caps text-label-caps text-primary">Contacto</h5>
+<ul class="space-y-2">
+<li><a class="text-on-surface-variant hover:text-primary transition-colors" href="#">Contactar soporte</a></li>
+<li><a class="text-on-surface-variant hover:text-primary transition-colors" href="#">Medios de misión</a></li>
+<li class="pt-2">
+<span class="font-body-md text-on-surface-variant opacity-80">© 2024 Greentech Amazon Systems. Todos los derechos reservados.</span>
+</li>
+</ul>
+</div>
+</div>
+</footer>
+</main>
+<script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const STORAGE_KEY = 'greentechDashboardState';
+            const defaultState = {
+                kpis: {
+                    deforestation: 1248,
+                    deforestationChange: '+12% vs año anterior',
+                    deforestationProgress: 78,
+                    activeAlerts: 42,
+                    sensorsOnline: '99.2%',
+                    carbonSequestration: '4.2k'
+                },
+                chart: {
+                    labels: ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'],
+                    incidents: [120, 190, 150, 240, 210, 280, 248],
+                    previousWeek: [100, 140, 130, 200, 180, 220, 210]
+                },
+                activeTab: 'dashboard',
+                stateVersion: 2,
+                alerts: [
+                    {
+                        severity: 'CRÍTICO',
+                        icon: 'warning',
+                        colorClass: 'border-emergency-red-border',
+                        badgeClass: 'bg-error/10 text-error',
+                        title: 'Pico térmico: Sector I-12',
+                        message: 'Posible quema ilegal detectada. Respuesta dron iniciada.',
+                        time: '2m'
+                    },
+                    {
+                        severity: 'ADVERTENCIA',
+                        icon: 'sensors',
+                        colorClass: 'border-tertiary',
+                        badgeClass: 'bg-tertiary/10 text-tertiary',
+                        title: 'Sensor desconectado: X-Alpha 4',
+                        message: 'Señal perdida en Iquitos, región Loreto. Revisión técnica pendiente.',
+                        time: '14m'
+                    },
+                    {
+                        severity: 'RESUELTO',
+                        icon: 'check_circle',
+                        colorClass: 'border-primary',
+                        badgeClass: 'bg-primary/10 text-primary',
+                        title: 'Reforestación verificada',
+                        message: 'Plantones del vivero del sector B-4 en Loreto confirmados por satélite.',
+                        time: '1h'
+                    },
+                    {
+                        severity: 'ADVERTENCIA',
+                        icon: 'water_drop',
+                        colorClass: 'border-tertiary',
+                        badgeClass: 'bg-tertiary/10 text-tertiary',
+                        title: 'Humedad baja detectada',
+                        message: 'Condiciones extremadamente secas en la cuenca superior. Riesgo de incendio en aumento.',
+                        time: '4h'
+                    }
+                ],
+                search: ''
+            };
+
+            const searchInput = document.getElementById('missionSearch');
+            const refreshButton = document.getElementById('btn-refresh-data');
+            const resetButton = document.getElementById('btn-reset-data');
+            const chartCtx = document.getElementById('impactChart').getContext('2d');
+            const tabButtons = Array.from(document.querySelectorAll('[data-tab]'));
+            const tabPanels = Array.from(document.querySelectorAll('.tab-panel'));
+            const pageTitle = document.getElementById('pageTitle');
+            const TAB_LABELS = {
+                dashboard: 'Control de Misión',
+                map: 'Mapa Ecológico',
+                alerts: 'Centro de alertas',
+                reports: 'Informes científicos',
+                sensors: 'Malla de sensores'
+            };
+
+            function setActiveTab(tabId, state) {
+                if (!tabId) return;
+                state.activeTab = tabId;
+                saveState(state);
+                tabButtons.forEach(btn => {
+                    const active = btn.dataset.tab === tabId;
+                    btn.classList.toggle('text-primary', active);
+                    btn.classList.toggle('font-bold', active);
+                    btn.classList.toggle('bg-surface-container-high', active);
+                    btn.classList.toggle('text-on-surface-variant', !active);
+                    btn.classList.toggle('hover:text-on-surface', !active);
+                    btn.classList.toggle('hover:bg-surface-container-highest', !active);
+                });
+                tabPanels.forEach(panel => {
+                    panel.classList.toggle('hidden', panel.id !== `tab-${tabId}`);
+                });
+                if (pageTitle) {
+                    pageTitle.textContent = TAB_LABELS[tabId] || pageTitle.textContent;
+                }
+                if (tabId === 'map') {
+                    setTimeout(() => {
+                        initLeafletMap();
+                        refreshLeafletMap();
+                    }, 50);
+                }
+            }
+
+            Chart.defaults.font.family = "'Hanken Grotesk', sans-serif";
+            Chart.defaults.color = '#bdcaba';
+
+            const impactChart = new Chart(chartCtx, {
+                type: 'line',
+                data: {
+                    labels: defaultState.chart.labels,
+                    datasets: [
+                        {
+                            label: 'Incidentes (ha)',
+                            data: defaultState.chart.incidents,
+                            borderColor: '#62df7d',
+                            backgroundColor: 'rgba(98, 223, 125, 0.1)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4,
+                            pointRadius: 4,
+                            pointBackgroundColor: '#62df7d'
+                        },
+                        {
+                            label: 'Semana anterior',
+                            data: defaultState.chart.previousWeek,
+                            borderColor: 'rgba(189, 202, 186, 0.2)',
+                            borderDash: [5, 5],
+                            borderWidth: 2,
+                            fill: false,
+                            tension: 0.4,
+                            pointRadius: 0
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: '#171f33',
+                            titleColor: '#62df7d',
+                            bodyColor: '#dae2fd',
+                            borderColor: 'rgba(255,255,255,0.1)',
+                            borderWidth: 1,
+                            padding: 12,
+                            displayColors: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                            ticks: {
+                                callback: value => value + ' ha'
+                            }
+                        },
+                        x: {
+                            grid: { display: false }
+                        }
+                    }
+                }
+            });
+
+            function loadState() {
+                try {
+                    const stored = JSON.parse(localStorage.getItem(STORAGE_KEY));
+                    if (!stored || !stored.alerts || stored.alerts.length === 0 || stored.stateVersion !== defaultState.stateVersion) {
+                        return Object.assign(JSON.parse(JSON.stringify(defaultState)), {
+                            activeTab: stored && stored.activeTab ? stored.activeTab : defaultState.activeTab,
+                            search: stored && stored.search ? stored.search : defaultState.search
+                        });
+                    }
+                    return stored;
+                } catch (error) {
+                    return Object.assign(JSON.parse(JSON.stringify(defaultState)), {
+                        activeTab: defaultState.activeTab,
+                        search: defaultState.search
+                    });
+                }
+            }
+
+            function saveState(state) {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+            }
+
+            function formatAlertCard(alert) {
+                return `
+                    <div class="flex gap-4 p-3 rounded-lg bg-surface-container-low/50 ${alert.colorClass}">
+                        <div class="shrink-0 w-10 h-10 rounded-full ${alert.badgeClass} flex items-center justify-center">
+                            <span class="material-symbols-outlined">${alert.icon}</span>
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex justify-between">
+                                <p class="font-label-caps text-label-caps text-[10px] ${alert.badgeClass.includes('text-error') ? 'text-error' : alert.badgeClass.includes('text-primary') ? 'text-primary' : 'text-tertiary'}">${alert.severity}</p>
+                                <p class="text-on-surface-variant text-[10px]">${alert.time}</p>
+                            </div>
+                            <p class="font-body-md text-body-md font-bold text-on-surface mt-1">${alert.title}</p>
+                            <p class="text-label-sm text-label-sm text-on-surface-variant mt-1">${alert.message}</p>
+                        </div>
+                    </div>
+                `;
+            }
+
+            function renderAlerts(alerts, searchTerm, containerId = 'alertsContainer') {
+                const container = document.getElementById(containerId);
+                if (!container) return;
+                const normalizedTerm = (searchTerm || '').trim().toLowerCase();
+                const filteredAlerts = normalizedTerm
+                    ? alerts.filter(alert => alert.title.toLowerCase().includes(normalizedTerm) || alert.message.toLowerCase().includes(normalizedTerm) || alert.severity.toLowerCase().includes(normalizedTerm))
+                    : alerts;
+
+                if (filteredAlerts.length === 0) {
+                    container.innerHTML = '<div class="rounded-lg bg-surface-container-low/50 p-4 text-on-surface-variant">Supervisa eventos críticos y responde a las notificaciones más recientes.</div>';
+                    return;
+                }
+
+                container.innerHTML = filteredAlerts.map(formatAlertCard).join('');
+            }
+
+            function renderKpis(kpis) {
+                document.getElementById('kpi-deforestation').textContent = kpis.deforestation.toLocaleString();
+                document.getElementById('kpi-deforestation-change').textContent = kpis.deforestationChange;
+                document.getElementById('kpi-deforestation-progress').style.width = kpis.deforestationProgress + '%';
+                document.getElementById('kpi-active-alerts').textContent = kpis.activeAlerts;
+                document.getElementById('kpi-sensors-online').textContent = kpis.sensorsOnline;
+                document.getElementById('kpi-carbon-sequestration').textContent = kpis.carbonSequestration;
+            }
+
+            function renderChart(state) {
+                impactChart.data.labels = state.chart.labels;
+                impactChart.data.datasets[0].data = state.chart.incidents;
+                impactChart.data.datasets[1].data = state.chart.previousWeek;
+                impactChart.update();
+            }
+
+            let leafletMap;
+            function initLeafletMap() {
+                const mapContainer = document.getElementById('leafletMap');
+                if (!mapContainer || leafletMap) return;
+
+                leafletMap = L.map(mapContainer, {
+                    center: [-3.7437, -73.2516],
+                    zoom: 12,
+                    zoomControl: false,
+                    attributionControl: false
+                });
+
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    maxZoom: 19,
+                    attribution: '&copy; OpenStreetMap contributors'
+                }).addTo(leafletMap);
+
+                L.marker([-3.7437, -73.2516])
+                    .addTo(leafletMap)
+                    .bindPopup('Iquitos, Perú')
+                    .openPopup();
+            }
+
+            function refreshLeafletMap() {
+                if (leafletMap) {
+                    setTimeout(() => {
+                        leafletMap.invalidateSize();
+                    }, 200);
+                }
+            }
+
+            const whatsappNumber = '51956359772';
+            const whatsappReports = [
+                'Estudio Iquitos diciembre 2009',
+                'Informe semanal de impacto',
+                'Reporte de sensores',
+                'Resumen de alertas'
+            ];
+            const tabNames = {
+                dashboard: 'Tablero',
+                map: 'Mapa Ecológico',
+                alerts: 'Centro de alertas',
+                reports: 'Informes científicos',
+                sensors: 'Malla de sensores'
+            };
+
+            function buildWhatsAppMessage(state) {
+                const currentDate = new Date();
+                const formattedDate = currentDate.toLocaleString('es-PE', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+                const alertLines = state.alerts.slice(0, 6).map(alert => `• ${alert.severity} | ${alert.title} | ${alert.time}`);
+                const reportLines = whatsappReports.map(report => `- ${report}`);
+                const searchInfo = state.search ? `Filtro de búsqueda activo: "${state.search}"` : 'No hay filtro de búsqueda activo.';
+                const message = [
+                    'Greentech Amazon Systems - Mensaje automático de estado desde Iquitos, Loreto.',
+                    `Fecha: ${formattedDate}`,
+                    `Pantalla actual: ${tabNames[state.activeTab] || state.activeTab}`,
+                    '',
+                    'Métricas clave:',
+                    `• Deforestación total detectada: ${state.kpis.deforestation.toLocaleString()} ha`,
+                    `• Cambio estimado: ${state.kpis.deforestationChange}`,
+                    `• Progreso de monitoreo: ${state.kpis.deforestationProgress}%`,
+                    `• Alertas activas: ${state.kpis.activeAlerts}`,
+                    `• Sensores en línea: ${state.kpis.sensorsOnline}`,
+                    `• Secuestro de carbono estimado: ${state.kpis.carbonSequestration}`,
+                    '',
+                    'Alertas recientes:',
+                    ...alertLines,
+                    '',
+                    'Reportes disponibles:',
+                    ...reportLines,
+                    '',
+                    searchInfo,
+                    '',
+                    'Acción recomendada: revisar inmediatamente los puntos críticos de Iquitos y coordinar patrullaje adicional.'
+                ].join('\n');
+                return `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
+            }
+
+            function initWhatsAppButton(state) {
+                const sendAlertsButton = document.getElementById('btn-send-alerts');
+                if (!sendAlertsButton) return;
+                sendAlertsButton.addEventListener('click', () => {
+                    window.open(buildWhatsAppMessage(state), '_blank');
+                });
+            }
+
+            function generateRandomAlert() {
+                const items = [
+                    {
+                        severity: 'CRÍTICO',
+                        icon: 'warning',
+                        colorClass: 'border-emergency-red-border',
+                        badgeClass: 'bg-error/10 text-error',
+                        title: 'Pico térmico: Sector I-12',
+                        message: 'Posible quema ilegal detectada. Respuesta dron iniciada.',
+                        time: '2m'
+                    },
+                    {
+                        severity: 'ADVERTENCIA',
+                        icon: 'sensors',
+                        colorClass: 'border-tertiary',
+                        badgeClass: 'bg-tertiary/10 text-tertiary',
+                        title: 'Sensor desconectado: X-Alpha 4',
+                        message: 'Señal perdida en Iquitos, región Loreto. Revisión técnica pendiente.',
+                        time: '14m'
+                    },
+                    {
+                        severity: 'RESUELTO',
+                        icon: 'check_circle',
+                        colorClass: 'border-primary',
+                        badgeClass: 'bg-primary/10 text-primary',
+                        title: 'Reforestación verificada',
+                        message: 'Plantones del vivero del sector B-4 en Loreto confirmados por satélite.',
+                        time: '1h'
+                    },
+                    {
+                        severity: 'ADVERTENCIA',
+                        icon: 'water_drop',
+                        colorClass: 'border-tertiary',
+                        badgeClass: 'bg-tertiary/10 text-tertiary',
+                        title: 'Humedad baja detectada',
+                        message: 'Condiciones extremadamente secas en la cuenca superior. Riesgo de incendio en aumento.',
+                        time: '4h'
+                    }
+                ];
+                return items[Math.floor(Math.random() * items.length)];
+            }
+
+            function updateStateWithSimulation(state) {
+                state.kpis.deforestation += Math.floor(Math.random() * 30 + 5);
+                state.kpis.activeAlerts = Math.max(1, state.kpis.activeAlerts + Math.floor(Math.random() * 5 - 2));
+                state.kpis.sensorsOnline = (99 + Math.random() * 0.8).toFixed(1) + '%';
+                state.kpis.carbonSequestration = (parseFloat(state.kpis.carbonSequestration) + Math.random() * 0.2).toFixed(1) + 'k';
+                state.kpis.deforestationProgress = Math.min(100, state.kpis.deforestationProgress + Math.floor(Math.random() * 4 + 1));
+
+                state.chart.incidents = state.chart.incidents.map(value => Math.max(80, value + Math.floor(Math.random() * 21 - 10)));
+                state.chart.previousWeek = state.chart.previousWeek.map(value => Math.max(80, value + Math.floor(Math.random() * 17 - 8)));
+
+                state.alerts.unshift(generateRandomAlert());
+                if (state.alerts.length > 6) {
+                    state.alerts.pop();
+                }
+
+                state.search = searchInput.value.trim();
+                return state;
+            }
+
+            function renderState(state) {
+                renderKpis(state.kpis);
+                renderAlerts(state.alerts, state.search, 'alertsContainer');
+                renderAlerts(state.alerts, state.search, 'dashboardAlertsContainer');
+                renderChart(state);
+                if (searchInput) {
+                    searchInput.value = state.search;
+                }
+            }
+
+            function init() {
+                let state = loadState();
+                if (!state || !state.alerts) {
+                    state = defaultState;
+                }
+                if (!state.activeTab) {
+                    state.activeTab = 'dashboard';
+                }
+                renderState(state);
+                setActiveTab(state.activeTab, state);
+                if (state.activeTab === 'map') {
+                    setTimeout(() => {
+                        initLeafletMap();
+                        refreshLeafletMap();
+                    }, 50);
+                }
+                saveState(state);
+
+                tabButtons.forEach(button => {
+                    button.addEventListener('click', event => {
+                        event.preventDefault();
+                        const tabId = button.dataset.tab;
+                        if (!tabId) return;
+                        setActiveTab(tabId, state);
+                    });
+                });
+
+                if (searchInput) {
+                    searchInput.addEventListener('input', () => {
+                        state.search = searchInput.value.trim();
+                        saveState(state);
+                        renderAlerts(state.alerts, state.search, 'alertsContainer');
+                        renderAlerts(state.alerts, state.search, 'dashboardAlertsContainer');
+                    });
+                }
+
+                refreshButton.addEventListener('click', () => {
+                    state = loadState();
+                    state = updateStateWithSimulation(state);
+                    saveState(state);
+                    renderState(state);
+                    setActiveTab(state.activeTab, state);
+                });
+
+                resetButton.addEventListener('click', () => {
+                    localStorage.removeItem(STORAGE_KEY);
+                    state = defaultState;
+                    saveState(state);
+                    renderState(state);
+                    setActiveTab(state.activeTab, state);
+                });
+
+                initWhatsAppButton(state);
+            }
+
+            init();
+        });
+    </script>
+</body></html>
