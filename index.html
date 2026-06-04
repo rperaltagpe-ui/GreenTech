@@ -224,6 +224,7 @@
 <button class="p-2 text-on-surface-variant hover:text-primary transition-colors">
 <span class="material-symbols-outlined" data-icon="settings">settings</span>
 </button>
+<button id="logoutButton" class="rounded-full border border-outline-variant/30 bg-surface-container-low px-3 py-2 text-xs font-medium uppercase tracking-[0.12em] text-primary transition hover:bg-surface-container-highest">Cerrar sesión</button>
 <div class="w-10 h-10 rounded-full bg-surface-container-high border-2 border-primary/20 overflow-hidden flex items-center justify-center">
 <img alt="User profile" class="w-full h-full object-cover" data-alt="A professional headshot of a technical lead working in environmental conservation. The subject is a man with a focused expression, wearing a clean, modern navy blue tactical shirt. He is set against a blurred background of a high-tech control room with glowing green data screens. The lighting is sophisticated and cinematic, highlighting his determined look for a mission-control environment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDvxN_ryZjbBNe49vhWpDs3r2h8n9ysf98MCRh3_yCNufa7Akhx79n5w8aJVaWur35EBshpWrNLsvOWnW5b8aZAbhe2NUvmsaHEB_XH_FcezpUEnuYHk82NgGR2iTHiJZRh3skUv3mwYcwCIKyzfBqTvx_X1z3phiMDr2GqRGXoEBf8uezbavc7WDTKxHv5EFcKak8HD3CDRsgbHOmUbgM9oNm_n2RTRLjPHTSRNGMvx8bn9zz1sOyc3paq2HNg25IabQWYcjovEH0"/>
 </div>
@@ -642,6 +643,7 @@
             const loginScreen = document.getElementById('loginScreen');
             const loginForm = document.getElementById('loginForm');
             const loginError = document.getElementById('loginError');
+            const logoutButton = document.getElementById('logoutButton');
             const pageSidebar = document.querySelector('aside');
             const pageMain = document.querySelector('main');
 
@@ -670,8 +672,16 @@
                 if (loginError) loginError.classList.remove('hidden');
             }
 
+            function handleLogout() {
+                localStorage.removeItem('greentechLoggedIn');
+                showLogin();
+            }
+
             if (loginForm) {
                 loginForm.addEventListener('submit', handleLoginSubmit);
+            }
+            if (logoutButton) {
+                logoutButton.addEventListener('click', handleLogout);
             }
 
             const isAuthenticated = localStorage.getItem('greentechLoggedIn') === 'true';
