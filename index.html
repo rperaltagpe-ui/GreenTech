@@ -31,6 +31,39 @@
             -ms-overflow-style: none;
             scrollbar-width: none;
         }
+        .app-surface {
+            background:
+                radial-gradient(circle at top left, rgba(28, 166, 77, 0.08), transparent 30rem),
+                #020617;
+        }
+        .panel {
+            background: #1e293b;
+            border: 1px solid rgba(62, 74, 61, 0.34);
+            border-radius: 0.75rem;
+        }
+        .touch-target {
+            min-height: 44px;
+            min-width: 44px;
+        }
+        .mobile-menu {
+            opacity: 0;
+            transform: translateY(-0.5rem);
+            pointer-events: none;
+            transition: opacity 150ms ease, transform 150ms ease;
+        }
+        .mobile-menu.is-open {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+        @media (max-width: 767px) {
+            .mobile-scroll-pad {
+                padding-bottom: calc(32px + env(safe-area-inset-bottom));
+            }
+            .mobile-card-grid {
+                grid-template-columns: minmax(0, 1fr);
+            }
+        }
     </style>
 <script id="tailwind-config">
       tailwind.config = {
@@ -134,7 +167,7 @@
 </head>
 <body class="font-body-md text-on-surface">
 <div id="loginScreen" class="fixed inset-0 z-50 bg-surface-deep/95 flex items-center justify-center p-6">
-    <div class="w-full max-w-md rounded-[28px] border border-outline-variant/30 bg-surface-card/95 backdrop-blur-xl p-8 shadow-[0_20px_60px_rgba(0,0,0,0.35)]">
+    <div class="w-full max-w-md rounded-xl border border-outline-variant/30 bg-surface-card/95 backdrop-blur-xl p-6 sm:p-8 shadow-[0_12px_36px_rgba(0,0,0,0.28)]">
         <div class="mb-6 text-center">
             <p class="text-xs uppercase tracking-[0.26em] text-primary font-bold">Greentech</p>
             <h1 class="mt-3 text-3xl font-bold text-on-surface">Acceso al sistema</h1>
@@ -143,16 +176,16 @@
         <form id="loginForm" class="space-y-4">
             <div>
                 <label for="loginUser" class="block text-sm text-on-surface-variant mb-2">Usuario</label>
-                <input id="loginUser" name="loginUser" required autocomplete="username" class="w-full rounded-2xl border border-outline-variant/40 bg-surface-container-lowest px-4 py-3 text-body-md text-on-surface focus:border-primary focus:ring-0" placeholder="Robinson" />
+                <input id="loginUser" name="loginUser" required autocomplete="username" class="w-full rounded-lg border border-outline-variant/40 bg-surface-container-lowest px-4 py-3 text-body-md text-on-surface focus:border-primary focus:ring-0" placeholder="Admin123" />
             </div>
             <div>
                 <label for="loginPassword" class="block text-sm text-on-surface-variant mb-2">Contraseña</label>
-                <input id="loginPassword" name="loginPassword" type="password" required autocomplete="current-password" class="w-full rounded-2xl border border-outline-variant/40 bg-surface-container-lowest px-4 py-3 text-body-md text-on-surface focus:border-primary focus:ring-0" placeholder="•••••••••" />
+                <input id="loginPassword" name="loginPassword" type="password" required autocomplete="current-password" class="w-full rounded-lg border border-outline-variant/40 bg-surface-container-lowest px-4 py-3 text-body-md text-on-surface focus:border-primary focus:ring-0" placeholder="•••••••••" />
             </div>
             <p id="loginError" class="hidden text-sm text-error">Usuario o contraseña incorrectos.</p>
-            <button type="submit" class="w-full rounded-2xl bg-primary px-4 py-3 text-sm font-bold uppercase tracking-[0.18em] text-on-primary shadow-[0_10px_30px_rgba(98,223,125,0.24)] hover:brightness-110">Ingresar</button>
+            <button type="submit" class="touch-target w-full rounded-lg bg-primary px-4 py-3 text-sm font-bold text-on-primary hover:brightness-110">Ingresar</button>
         </form>
-        <p class="mt-6 text-center text-xs text-on-surface-variant">Usuario: Robinson | Contraseña: admin123</p>
+        <p class="mt-6 text-center text-xs text-on-surface-variant">Usuario: Admin123 | Contraseña: admin123</p>
     </div>
 </div>
 <!-- Sidebar Navigation Shell -->
@@ -199,45 +232,76 @@
 </div>
 </aside>
 <!-- Main Content Canvas -->
-<main hidden class="md:ml-64 min-h-screen bg-surface-deep">
+<main hidden class="md:ml-64 min-h-screen app-surface mobile-scroll-pad">
 <!-- Header / Top Bar -->
-<header class="sticky top-0 z-40 bg-surface/80 backdrop-blur-md flex justify-between items-center px-container-margin py-4 w-full">
-<div class="flex items-center gap-4">
-<div class="flex items-center gap-3">
+<header class="sticky top-0 z-40 bg-surface/90 backdrop-blur-md border-b border-outline-variant/20 px-4 sm:px-6 lg:px-8 xl:px-10 py-3 sm:py-4 w-full">
+<div class="relative flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center">
+<div class="flex w-full items-center justify-between gap-4 sm:w-auto sm:justify-start">
+<div class="flex min-w-0 items-center gap-3">
+<button id="mobileMenuButton" type="button" class="touch-target md:hidden rounded-lg border border-outline-variant/30 bg-surface-container-low p-2 text-on-surface transition hover:bg-surface-container-highest" aria-expanded="false" aria-controls="mobileMenu" aria-label="Abrir navegación">
+<span class="material-symbols-outlined text-[24px]">menu</span>
+</button>
 <img src="GreenTech.png" alt="Greentech logo" class="h-10 w-10 object-contain" />
-<h2 id="pageTitle" class="font-headline-md text-headline-md font-bold text-primary">Control de Misión</h2>
+<h2 id="pageTitle" class="font-headline-md text-[20px] sm:text-headline-md font-bold text-primary truncate">Control de Misión</h2>
 </div>
 <div class="hidden sm:flex bg-surface-container-low rounded-full px-4 py-1.5 items-center gap-2 border border-outline-variant/20">
 <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
 <span class="font-label-caps text-label-caps text-[10px]">En vivo: Iquitos, Loreto</span>
 </div>
 </div>
-<div class="flex items-center gap-gutter">
+<div class="flex w-full items-center justify-between gap-3 sm:w-auto sm:justify-end sm:gap-gutter">
+<div class="sm:hidden flex bg-surface-container-low rounded-full px-3 py-1.5 items-center gap-2 border border-outline-variant/20">
+<span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+<span class="font-label-caps text-label-caps text-[10px]">Iquitos en vivo</span>
+</div>
 <div class="relative group hidden lg:block">
 <span class="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-on-surface-variant text-[20px]">search</span>
 <input id="missionSearch" class="bg-surface-container-low border border-outline-variant/30 rounded-lg pl-10 pr-4 py-2 text-body-md focus:border-primary focus:ring-0 transition-all w-64" placeholder="Buscar nodos de misión..." type="text"/>
 </div>
-<div class="flex items-center gap-2">
-<button class="p-2 text-on-surface-variant hover:text-primary transition-colors">
+<div class="flex items-center gap-1 sm:gap-2">
+<button class="touch-target p-2 text-on-surface-variant hover:text-primary transition-colors rounded-lg">
 <span class="material-symbols-outlined" data-icon="notifications">notifications</span>
 </button>
-<button class="p-2 text-on-surface-variant hover:text-primary transition-colors">
+<button class="touch-target p-2 text-on-surface-variant hover:text-primary transition-colors rounded-lg">
 <span class="material-symbols-outlined" data-icon="settings">settings</span>
 </button>
-<button id="logoutButton" class="rounded-full border border-outline-variant/30 bg-surface-container-low px-3 py-2 text-xs font-medium uppercase tracking-[0.12em] text-primary transition hover:bg-surface-container-highest">Cerrar sesión</button>
-<div class="w-10 h-10 rounded-full bg-surface-container-high border-2 border-primary/20 overflow-hidden flex items-center justify-center">
+<button id="logoutButton" class="touch-target rounded-lg border border-outline-variant/30 bg-surface-container-low px-3 py-2 text-xs font-medium text-primary transition hover:bg-surface-container-highest">Salir</button>
+<div class="hidden sm:flex w-10 h-10 rounded-full bg-surface-container-high border-2 border-primary/20 overflow-hidden items-center justify-center">
 <img alt="User profile" class="w-full h-full object-cover" data-alt="A professional headshot of a technical lead working in environmental conservation. The subject is a man with a focused expression, wearing a clean, modern navy blue tactical shirt. He is set against a blurred background of a high-tech control room with glowing green data screens. The lighting is sophisticated and cinematic, highlighting his determined look for a mission-control environment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDvxN_ryZjbBNe49vhWpDs3r2h8n9ysf98MCRh3_yCNufa7Akhx79n5w8aJVaWur35EBshpWrNLsvOWnW5b8aZAbhe2NUvmsaHEB_XH_FcezpUEnuYHk82NgGR2iTHiJZRh3skUv3mwYcwCIKyzfBqTvx_X1z3phiMDr2GqRGXoEBf8uezbavc7WDTKxHv5EFcKak8HD3CDRsgbHOmUbgM9oNm_n2RTRLjPHTSRNGMvx8bn9zz1sOyc3paq2HNg25IabQWYcjovEH0"/>
 </div>
 </div>
 </div>
+<nav id="mobileMenu" class="mobile-menu md:hidden absolute left-0 right-0 top-[calc(100%+0.75rem)] z-50 rounded-xl border border-outline-variant/30 bg-surface-container-lowest p-2 shadow-[0_12px_28px_rgba(0,0,0,0.28)]">
+<a data-tab="dashboard" class="touch-target flex items-center gap-3 rounded-lg px-3 py-2 text-primary bg-surface-container-high" href="#">
+<span class="material-symbols-outlined text-[22px]">dashboard</span>
+<span class="font-medium">Tablero</span>
+</a>
+<a data-tab="map" class="touch-target flex items-center gap-3 rounded-lg px-3 py-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high" href="#">
+<span class="material-symbols-outlined text-[22px]">map</span>
+<span class="font-medium">Mapa Ecológico</span>
+</a>
+<a data-tab="alerts" class="touch-target flex items-center gap-3 rounded-lg px-3 py-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high" href="#">
+<span class="material-symbols-outlined text-[22px]">warning</span>
+<span class="font-medium">Centro de alertas</span>
+</a>
+<a data-tab="reports" class="touch-target flex items-center gap-3 rounded-lg px-3 py-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high" href="#">
+<span class="material-symbols-outlined text-[22px]">assessment</span>
+<span class="font-medium">Informes científicos</span>
+</a>
+<a data-tab="sensors" class="touch-target flex items-center gap-3 rounded-lg px-3 py-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high" href="#">
+<span class="material-symbols-outlined text-[22px]">sensors</span>
+<span class="font-medium">Malla de sensores</span>
+</a>
+</nav>
+</div>
 </header>
 <!-- Dashboard Content -->
-<div id="mainContent" class="px-container-margin py-stack-md space-y-gutter">
-<section id="tab-dashboard" class="tab-panel">
+<div id="mainContent" class="px-4 sm:px-6 lg:px-8 xl:px-10 py-6 sm:py-8 lg:py-10 space-y-6 sm:space-y-8 lg:space-y-10 max-w-[1520px] mx-auto">
+<section id="tab-dashboard" class="tab-panel space-y-6 lg:space-y-8">
 <!-- KPI Grid -->
-<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-gutter">
+<div class="grid mobile-card-grid sm:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-5 lg:gap-6">
 <!-- KPI 1 -->
-<div class="bg-surface-card p-card-padding rounded-lg border border-outline-variant/10 group hover:border-primary/40 transition-all">
+<div class="panel p-5 lg:p-6 group hover:border-primary/40 transition-all">
 <div class="flex justify-between items-start mb-4">
 <span class="font-label-caps text-label-caps text-on-surface-variant">Deforestación ha</span>
 <div class="p-2 rounded bg-tertiary-container/10 text-tertiary">
@@ -253,7 +317,7 @@
 </div>
 </div>
 <!-- KPI 2 -->
-<div class="bg-surface-card p-card-padding rounded-lg border border-outline-variant/10 group hover:border-primary/40 transition-all">
+<div class="panel p-5 lg:p-6 group hover:border-primary/40 transition-all">
 <div class="flex justify-between items-start mb-4">
 <span class="font-label-caps text-label-caps text-on-surface-variant">Alertas activas</span>
 <div class="p-2 rounded bg-error-container/10 text-error">
@@ -272,7 +336,7 @@
 </div>
 </div>
 <!-- KPI 3 -->
-<div class="bg-surface-card p-card-padding rounded-lg border border-outline-variant/10 group hover:border-primary/40 transition-all">
+<div class="panel p-5 lg:p-6 group hover:border-primary/40 transition-all">
 <div class="flex justify-between items-start mb-4">
 <span class="font-label-caps text-label-caps text-on-surface-variant">Sensores en línea</span>
 <div class="p-2 rounded bg-primary-container/10 text-primary">
@@ -286,7 +350,7 @@
 <p class="text-[10px] font-label-caps text-on-surface-variant mt-4">8,402 ACTIVE NODES</p>
 </div>
 <!-- KPI 4 -->
-<div class="bg-surface-card p-card-padding rounded-lg border border-outline-variant/10 group hover:border-primary/40 transition-all">
+<div class="panel p-5 lg:p-6 group hover:border-primary/40 transition-all">
 <div class="flex justify-between items-start mb-4">
 <span class="font-label-caps text-label-caps text-on-surface-variant">Secuestro de carbono</span>
 <div class="p-2 rounded bg-secondary-container/10 text-secondary">
@@ -304,17 +368,17 @@
 </div>
 </div>
 <!-- Main Analytics & Feed Grid -->
-<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-5 lg:gap-7">
 <!-- Chart Section -->
-<div class="lg:col-span-8 bg-surface-card rounded-lg border border-outline-variant/10 p-card-padding flex flex-col h-[450px]">
-<div class="flex justify-between items-center mb-6">
+<div class="lg:col-span-8 panel p-5 lg:p-7 flex flex-col h-[360px] sm:h-[430px] lg:h-[470px]">
+<div class="flex flex-col gap-4 xl:flex-row xl:justify-between xl:items-center mb-6">
 <div>
 <h3 class="font-headline-sm text-headline-sm text-on-surface">Informe semanal de impacto</h3>
 <p class="text-body-md text-on-surface-variant">Incidentes de deforestación y esfuerzos de mitigación</p>
 </div>
-<div class="flex bg-surface-container-lowest rounded-lg p-1">
-<button class="px-3 py-1 text-label-sm font-label-sm bg-surface-container-high text-primary rounded shadow-sm">INCIDENTES</button>
-<button class="px-3 py-1 text-label-sm font-label-sm text-on-surface-variant hover:text-on-surface">MITIGADOS</button>
+<div class="flex w-full sm:w-auto bg-surface-container-lowest rounded-lg p-1">
+<button class="touch-target flex-1 sm:flex-none px-3 py-1 text-label-sm font-label-sm bg-surface-container-high text-primary rounded">INCIDENTES</button>
+<button class="touch-target flex-1 sm:flex-none px-3 py-1 text-label-sm font-label-sm text-on-surface-variant hover:text-on-surface">MITIGADOS</button>
 </div>
 </div>
 <div class="flex-1 min-h-0">
@@ -322,37 +386,37 @@
 </div>
 </div>
 <!-- Recent Alerts Feed -->
-<div class="lg:col-span-4 flex flex-col gap-gutter">
-<div class="bg-surface-card rounded-lg border border-outline-variant/10 p-card-padding flex-1 flex flex-col">
-<div class="flex justify-between items-center mb-6">
+<div class="lg:col-span-4 flex flex-col gap-4 lg:gap-6">
+<div class="panel p-5 lg:p-7 flex-1 flex flex-col">
+<div class="flex flex-col gap-4 xl:flex-row xl:justify-between xl:items-start mb-6">
 <h3 class="font-headline-sm text-headline-sm text-on-surface">Alertas recientes</h3>
-<div class="flex items-center gap-2">
-<button id="btn-refresh-data" class="text-primary text-label-sm font-label-sm hover:underline">Simular actualización</button>
-<button id="btn-reset-data" class="text-on-surface-variant text-label-sm font-label-sm hover:text-primary">Reiniciar datos</button>
+<div class="flex flex-wrap items-center gap-2">
+<button data-action="refresh-data" class="touch-target rounded-lg bg-surface-container-low px-3 text-primary text-label-sm font-label-sm hover:bg-surface-container-high">Simular actualización</button>
+<button data-action="reset-data" class="touch-target rounded-lg bg-surface-container-low px-3 text-on-surface-variant text-label-sm font-label-sm hover:text-primary hover:bg-surface-container-high">Reiniciar datos</button>
 </div>
 </div>
-<div id="dashboardAlertsContainer" class="space-y-4 overflow-y-auto no-scrollbar max-h-[350px]"></div>
+<div id="dashboardAlertsContainer" class="space-y-3 sm:space-y-4 overflow-y-auto no-scrollbar max-h-[420px] lg:max-h-[350px]"></div>
 </div>
 </div>
 </div>
 <!-- Satellite View Mini Map & Regional Stats -->
-<div class="grid grid-cols-1 lg:grid-cols-3 gap-gutter">
-<div class="lg:col-span-2 relative h-80 rounded-lg overflow-hidden border border-outline-variant/10">
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-5 lg:gap-7">
+<div class="lg:col-span-2 relative min-h-[360px] sm:h-80 rounded-xl overflow-hidden border border-outline-variant/30">
 <img class="w-full h-full object-cover grayscale-[0.5] contrast-[1.2]" data-alt="A top-down satellite view of the lush Amazon rainforest, displaying dense canopies of various greens. In certain areas, there are sharp, geometric clearings indicating deforestation, highlighted with faint, glowing digital overlays in neon red. The lighting is bright daylight, and the aesthetic is clean, technical, and reminiscent of a high-end environmental monitoring dashboard's map interface." data-location="Amazon Rainforest" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAmDFOVKJeXC8JhB9Sgte3W5r6gy3i55auR8hwrdrfufExOiBnb-hXQqb8R6EvzlY1RfAfGo8TJBmmdM1fF3XXJIfMAe6soLU6P5CdhWgd5iJfIOc3Z4Az2wzn6OLbmjoQP2hQo9LkhLj2HqKvJHn-bX66Gv5lLE1gsczXTa54A4EaN3hoz6ChgUPdNkQKzruLfQ-NwP7_riIKMNjBVg5Kd9Zuxyd8UaEJ_eG2KCylyqnxAfkChjsfcZLP4M8nUmVrLx5XQAagQIpc"/>
 <div class="absolute inset-0 bg-gradient-to-t from-surface-deep/80 to-transparent"></div>
-<div class="absolute top-4 left-4 glass-panel px-3 py-1.5 rounded-lg flex items-center gap-2">
+<div class="absolute top-4 left-4 right-4 sm:right-auto glass-panel px-3 py-1.5 rounded-lg flex items-center gap-2">
 <span class="material-symbols-outlined text-primary text-[18px]">satellite_alt</span>
 <span class="font-label-caps text-label-caps text-on-surface text-[10px]">Transmisión satelital en tiempo real</span>
 </div>
-<div class="absolute bottom-4 left-4 right-4 flex justify-between items-end">
+<div class="absolute bottom-4 left-4 right-4 flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-end">
 <div class="glass-panel p-3 rounded-lg">
 <h4 class="font-label-caps text-label-caps text-on-surface-variant text-[10px]">SECTOR OBJETIVO</h4>
 <p class="font-headline-sm text-headline-sm text-on-surface">Iquitos Norte 04</p>
 </div>
-<button class="bg-primary hover:brightness-110 text-on-primary font-bold px-6 py-2 rounded-lg font-label-caps text-label-caps transition-all">Ampliar mapa</button>
+<button class="touch-target bg-primary hover:brightness-110 text-on-primary font-bold px-6 py-2 rounded-lg font-label-caps text-label-caps transition-all">Ampliar mapa</button>
 </div>
 </div>
-<div class="bg-surface-card rounded-lg border border-outline-variant/10 p-card-padding">
+<div class="panel p-5 lg:p-7">
 <h3 class="font-headline-sm text-headline-sm text-on-surface mb-6">Nivel de riesgo regional</h3>
 <div class="space-y-6">
 <div>
@@ -387,25 +451,25 @@
 </div>
 </section>
 <section id="tab-map" class="hidden tab-panel">
-<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
-<div class="lg:col-span-8 bg-surface-card rounded-lg border border-outline-variant/10 p-card-padding">
-<div class="flex justify-between items-center mb-6">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-5 lg:gap-7">
+<div class="lg:col-span-8 panel p-5 lg:p-7">
+<div class="flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center mb-5 sm:mb-6">
 <div>
 <h3 class="font-headline-sm text-headline-sm text-on-surface">Mapa Ecológico</h3>
 <p class="text-body-md text-on-surface-variant">Vista satelital y análisis de zonas sensibles dentro de la región.</p>
 </div>
-<button class="px-3 py-1 text-label-sm font-label-sm bg-surface-container-high text-primary rounded shadow-sm">VER CAPAS</button>
+<button class="touch-target px-3 py-1 text-label-sm font-label-sm bg-surface-container-high text-primary rounded">VER CAPAS</button>
 </div>
-<div class="relative h-[420px] rounded-lg overflow-hidden border border-outline-variant/10 bg-surface-container-lowest">
+<div class="relative h-[360px] sm:h-[420px] rounded-lg overflow-hidden border border-outline-variant/10 bg-surface-container-lowest">
 <div id="leafletMap" class="h-full w-full"></div>
 <div class="absolute inset-0 bg-gradient-to-t from-surface-deep/80 to-transparent pointer-events-none"></div>
-<div class="absolute top-4 left-4 glass-panel px-3 py-1.5 rounded-lg flex items-center gap-2">
+<div class="absolute top-4 left-4 right-4 sm:right-auto glass-panel px-3 py-1.5 rounded-lg flex items-center gap-2">
 <span class="material-symbols-outlined text-primary text-[18px]">satellite_alt</span>
 <span class="font-label-caps text-label-caps text-on-surface text-[10px]">Transmisión satelital en tiempo real</span>
 </div>
 </div>
 </div>
-<div class="lg:col-span-4 bg-surface-card rounded-lg border border-outline-variant/10 p-card-padding space-y-6">
+<div class="lg:col-span-4 panel p-5 lg:p-7 space-y-6">
 <div>
 <h4 class="font-label-caps text-label-caps text-primary">Sector monitoreado</h4>
 <p class="font-headline-sm text-headline-sm text-on-surface">Iquitos Norte 04</p>
@@ -433,25 +497,25 @@
 </div>
 </section>
 <section id="tab-alerts" class="hidden tab-panel">
-<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
-<div class="lg:col-span-8 bg-surface-card rounded-lg border border-outline-variant/10 p-card-padding">
-<div class="flex justify-between items-center mb-6">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-5 lg:gap-7">
+<div class="lg:col-span-8 panel p-5 lg:p-7">
+<div class="flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center mb-5 sm:mb-6">
 <div>
 <h3 class="font-headline-sm text-headline-sm text-on-surface">Centro de alertas</h3>
 <p class="text-body-md text-on-surface-variant">Supervisa eventos críticos y responde a las notificaciones más recientes.</p>
 </div>
-<div class="flex items-center gap-2">
-<button id="btn-refresh-data" class="text-primary text-label-sm font-label-sm hover:underline">Simular actualización</button>
-<button id="btn-reset-data" class="text-on-surface-variant text-label-sm font-label-sm hover:text-primary">Reiniciar datos</button>
+<div class="flex flex-wrap items-center gap-2">
+<button data-action="refresh-data" class="touch-target rounded-lg bg-surface-container-low px-3 text-primary text-label-sm font-label-sm hover:bg-surface-container-high">Simular actualización</button>
+<button data-action="reset-data" class="touch-target rounded-lg bg-surface-container-low px-3 text-on-surface-variant text-label-sm font-label-sm hover:text-primary hover:bg-surface-container-high">Reiniciar datos</button>
 </div>
 </div>
-<div id="alertsContainer" class="space-y-4 overflow-y-auto no-scrollbar max-h-[420px]">
+<div id="alertsContainer" class="space-y-3 sm:space-y-4 overflow-y-auto no-scrollbar max-h-[520px] lg:max-h-[420px]">
     <div class="rounded-lg bg-surface-container-low/50 p-4 text-on-surface-variant">
         Supervisa eventos críticos y responde a las notificaciones más recientes.
     </div>
 </div>
 </div>
-<div class="lg:col-span-4 bg-surface-card rounded-lg border border-outline-variant/10 p-card-padding space-y-6">
+<div class="lg:col-span-4 panel p-5 lg:p-7 space-y-6">
 <div>
 <h4 class="font-label-caps text-label-caps text-primary">Resumen de alertas</h4>
 <ul class="space-y-3 text-body-md text-on-surface-variant">
@@ -468,8 +532,8 @@
 </div>
 </section>
 <section id="tab-reports" class="hidden tab-panel">
-<div class="grid grid-cols-1 lg:grid-cols-3 gap-gutter">
-<div class="lg:col-span-2 bg-surface-card rounded-lg border border-outline-variant/10 p-card-padding">
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-5 lg:gap-7">
+<div class="lg:col-span-2 panel p-5 lg:p-7">
 <h3 class="font-headline-sm text-headline-sm text-on-surface mb-6">Informes científicos</h3>
 <div class="space-y-6">
 <div class="bg-surface-container-lowest rounded-lg p-4">
@@ -486,7 +550,7 @@
 </div>
 </div>
 </div>
-<div class="bg-surface-card rounded-lg border border-outline-variant/10 p-card-padding space-y-6">
+<div class="panel p-5 lg:p-7 space-y-6">
 <h4 class="font-label-caps text-label-caps text-primary">Descargas</h4>
 <ul class="space-y-3 text-body-md text-on-surface-variant">
 <li><a class="text-primary hover:underline" href="estudio%20Iquitos%20diciembre%202009.pdf" target="_blank" download>Estudio Iquitos diciembre 2009</a></li>
@@ -498,8 +562,8 @@
 </div>
 </section>
 <section id="tab-sensors" class="hidden tab-panel">
-<div class="grid grid-cols-1 lg:grid-cols-3 gap-gutter">
-<div class="lg:col-span-2 bg-surface-card rounded-lg border border-outline-variant/10 p-card-padding">
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-5 lg:gap-7">
+<div class="lg:col-span-2 panel p-5 lg:p-7">
 <h3 class="font-headline-sm text-headline-sm text-on-surface mb-6">Malla de sensores</h3>
 <div class="space-y-6">
 <div class="bg-surface-container-lowest rounded-lg p-4">
@@ -516,7 +580,7 @@
 </div>
 </div>
 </div>
-<div class="bg-surface-card rounded-lg border border-outline-variant/10 p-card-padding space-y-6">
+<div class="panel p-5 lg:p-7 space-y-6">
 <h4 class="font-label-caps text-label-caps text-primary">Estado del enlace</h4>
 <div class="text-body-md text-on-surface-variant">
 <p class="mb-3">Red satelital: estable.</p>
@@ -528,8 +592,8 @@
 </section>
 </div>
 <!-- Footer Shell -->
-<footer class="w-full py-section-gap bg-surface-container-lowest border-t border-outline-variant/10 mt-12">
-<div class="grid grid-cols-1 md:grid-cols-4 gap-gutter px-container-margin max-w-7xl mx-auto">
+<footer class="w-full py-8 sm:py-section-gap bg-surface-container-lowest border-t border-outline-variant/10 mt-10 sm:mt-12">
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-gutter px-4 sm:px-6 lg:px-container-margin max-w-7xl mx-auto">
 <div class="space-y-4">
 <h4 class="font-headline-sm text-headline-sm font-bold text-on-surface">Greentech</h4>
 <p class="text-body-md text-on-surface-variant opacity-80">Impulsando la conservación con telemetría avanzada y monitoreo satelital autónomo. Protegiendo los biomas más críticos.</p>
@@ -563,513 +627,5 @@
 </div>
 </footer>
 </main>
-<script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const STORAGE_KEY = 'greentechDashboardState';
-            const defaultState = {
-                kpis: {
-                    deforestation: 1248,
-                    deforestationChange: '+12% vs año anterior',
-                    deforestationProgress: 78,
-                    activeAlerts: 42,
-                    sensorsOnline: '99.2%',
-                    carbonSequestration: '4.2k'
-                },
-                chart: {
-                    labels: ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'],
-                    incidents: [120, 190, 150, 240, 210, 280, 248],
-                    previousWeek: [100, 140, 130, 200, 180, 220, 210]
-                },
-                activeTab: 'dashboard',
-                stateVersion: 2,
-                alerts: [
-                    {
-                        severity: 'CRÍTICO',
-                        icon: 'warning',
-                        colorClass: 'border-emergency-red-border',
-                        badgeClass: 'bg-error/10 text-error',
-                        title: 'Pico térmico: Sector I-12',
-                        message: 'Posible quema ilegal detectada. Respuesta dron iniciada.',
-                        time: '2m'
-                    },
-                    {
-                        severity: 'ADVERTENCIA',
-                        icon: 'sensors',
-                        colorClass: 'border-tertiary',
-                        badgeClass: 'bg-tertiary/10 text-tertiary',
-                        title: 'Sensor desconectado: X-Alpha 4',
-                        message: 'Señal perdida en Iquitos, región Loreto. Revisión técnica pendiente.',
-                        time: '14m'
-                    },
-                    {
-                        severity: 'RESUELTO',
-                        icon: 'check_circle',
-                        colorClass: 'border-primary',
-                        badgeClass: 'bg-primary/10 text-primary',
-                        title: 'Reforestación verificada',
-                        message: 'Plantones del vivero del sector B-4 en Loreto confirmados por satélite.',
-                        time: '1h'
-                    },
-                    {
-                        severity: 'ADVERTENCIA',
-                        icon: 'water_drop',
-                        colorClass: 'border-tertiary',
-                        badgeClass: 'bg-tertiary/10 text-tertiary',
-                        title: 'Humedad baja detectada',
-                        message: 'Condiciones extremadamente secas en la cuenca superior. Riesgo de incendio en aumento.',
-                        time: '4h'
-                    }
-                ],
-                search: ''
-            };
-
-            const searchInput = document.getElementById('missionSearch');
-            const refreshButton = document.getElementById('btn-refresh-data');
-            const resetButton = document.getElementById('btn-reset-data');
-            const chartCtx = document.getElementById('impactChart').getContext('2d');
-            const tabButtons = Array.from(document.querySelectorAll('[data-tab]'));
-            const tabPanels = Array.from(document.querySelectorAll('.tab-panel'));
-            const pageTitle = document.getElementById('pageTitle');
-            const TAB_LABELS = {
-                dashboard: 'Control de Misión',
-                map: 'Mapa Ecológico',
-                alerts: 'Centro de alertas',
-                reports: 'Informes científicos',
-                sensors: 'Malla de sensores'
-            };
-
-            const LOGIN_USERNAME = 'Robinson';
-            const LOGIN_PASSWORD = 'admin123';
-            const loginScreen = document.getElementById('loginScreen');
-            const loginForm = document.getElementById('loginForm');
-            const loginError = document.getElementById('loginError');
-            const logoutButton = document.getElementById('logoutButton');
-            const pageSidebar = document.querySelector('aside');
-            const pageMain = document.querySelector('main');
-
-            function showApp() {
-                if (pageSidebar) pageSidebar.removeAttribute('hidden');
-                if (pageMain) pageMain.removeAttribute('hidden');
-                if (loginScreen) loginScreen.classList.add('hidden');
-            }
-
-            function showLogin() {
-                if (pageSidebar) pageSidebar.setAttribute('hidden', '');
-                if (pageMain) pageMain.setAttribute('hidden', '');
-                if (loginScreen) loginScreen.classList.remove('hidden');
-            }
-
-            function handleLoginSubmit(event) {
-                event.preventDefault();
-                const username = document.getElementById('loginUser')?.value.trim();
-                const password = document.getElementById('loginPassword')?.value;
-                if (username === LOGIN_USERNAME && password === LOGIN_PASSWORD) {
-                    localStorage.setItem('greentechLoggedIn', 'true');
-                    if (loginError) loginError.classList.add('hidden');
-                    showApp();
-                    return;
-                }
-                if (loginError) loginError.classList.remove('hidden');
-            }
-
-            function handleLogout() {
-                localStorage.removeItem('greentechLoggedIn');
-                showLogin();
-            }
-
-            if (loginForm) {
-                loginForm.addEventListener('submit', handleLoginSubmit);
-            }
-            if (logoutButton) {
-                logoutButton.addEventListener('click', handleLogout);
-            }
-
-            const isAuthenticated = localStorage.getItem('greentechLoggedIn') === 'true';
-            if (isAuthenticated) {
-                showApp();
-            } else {
-                showLogin();
-            }
-
-            function setActiveTab(tabId, state) {
-                if (!tabId) return;
-                state.activeTab = tabId;
-                saveState(state);
-                tabButtons.forEach(btn => {
-                    const active = btn.dataset.tab === tabId;
-                    btn.classList.toggle('text-primary', active);
-                    btn.classList.toggle('font-bold', active);
-                    btn.classList.toggle('bg-surface-container-high', active);
-                    btn.classList.toggle('text-on-surface-variant', !active);
-                    btn.classList.toggle('hover:text-on-surface', !active);
-                    btn.classList.toggle('hover:bg-surface-container-highest', !active);
-                });
-                tabPanels.forEach(panel => {
-                    panel.classList.toggle('hidden', panel.id !== `tab-${tabId}`);
-                });
-                if (pageTitle) {
-                    pageTitle.textContent = TAB_LABELS[tabId] || pageTitle.textContent;
-                }
-                if (tabId === 'map') {
-                    setTimeout(() => {
-                        initLeafletMap();
-                        refreshLeafletMap();
-                    }, 50);
-                }
-            }
-
-            Chart.defaults.font.family = "'Hanken Grotesk', sans-serif";
-            Chart.defaults.color = '#bdcaba';
-
-            const impactChart = new Chart(chartCtx, {
-                type: 'line',
-                data: {
-                    labels: defaultState.chart.labels,
-                    datasets: [
-                        {
-                            label: 'Incidentes (ha)',
-                            data: defaultState.chart.incidents,
-                            borderColor: '#62df7d',
-                            backgroundColor: 'rgba(98, 223, 125, 0.1)',
-                            borderWidth: 3,
-                            fill: true,
-                            tension: 0.4,
-                            pointRadius: 4,
-                            pointBackgroundColor: '#62df7d'
-                        },
-                        {
-                            label: 'Semana anterior',
-                            data: defaultState.chart.previousWeek,
-                            borderColor: 'rgba(189, 202, 186, 0.2)',
-                            borderDash: [5, 5],
-                            borderWidth: 2,
-                            fill: false,
-                            tension: 0.4,
-                            pointRadius: 0
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: {
-                            backgroundColor: '#171f33',
-                            titleColor: '#62df7d',
-                            bodyColor: '#dae2fd',
-                            borderColor: 'rgba(255,255,255,0.1)',
-                            borderWidth: 1,
-                            padding: 12,
-                            displayColors: false
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            grid: { color: 'rgba(255, 255, 255, 0.05)' },
-                            ticks: {
-                                callback: value => value + ' ha'
-                            }
-                        },
-                        x: {
-                            grid: { display: false }
-                        }
-                    }
-                }
-            });
-
-            function loadState() {
-                try {
-                    const stored = JSON.parse(localStorage.getItem(STORAGE_KEY));
-                    if (!stored || !stored.alerts || stored.alerts.length === 0 || stored.stateVersion !== defaultState.stateVersion) {
-                        return Object.assign(JSON.parse(JSON.stringify(defaultState)), {
-                            activeTab: stored && stored.activeTab ? stored.activeTab : defaultState.activeTab,
-                            search: stored && stored.search ? stored.search : defaultState.search
-                        });
-                    }
-                    return stored;
-                } catch (error) {
-                    return Object.assign(JSON.parse(JSON.stringify(defaultState)), {
-                        activeTab: defaultState.activeTab,
-                        search: defaultState.search
-                    });
-                }
-            }
-
-            function saveState(state) {
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-            }
-
-            function formatAlertCard(alert) {
-                return `
-                    <div class="flex gap-4 p-3 rounded-lg bg-surface-container-low/50 ${alert.colorClass}">
-                        <div class="shrink-0 w-10 h-10 rounded-full ${alert.badgeClass} flex items-center justify-center">
-                            <span class="material-symbols-outlined">${alert.icon}</span>
-                        </div>
-                        <div class="flex-1">
-                            <div class="flex justify-between">
-                                <p class="font-label-caps text-label-caps text-[10px] ${alert.badgeClass.includes('text-error') ? 'text-error' : alert.badgeClass.includes('text-primary') ? 'text-primary' : 'text-tertiary'}">${alert.severity}</p>
-                                <p class="text-on-surface-variant text-[10px]">${alert.time}</p>
-                            </div>
-                            <p class="font-body-md text-body-md font-bold text-on-surface mt-1">${alert.title}</p>
-                            <p class="text-label-sm text-label-sm text-on-surface-variant mt-1">${alert.message}</p>
-                        </div>
-                    </div>
-                `;
-            }
-
-            function renderAlerts(alerts, searchTerm, containerId = 'alertsContainer') {
-                const container = document.getElementById(containerId);
-                if (!container) return;
-                const normalizedTerm = (searchTerm || '').trim().toLowerCase();
-                const filteredAlerts = normalizedTerm
-                    ? alerts.filter(alert => alert.title.toLowerCase().includes(normalizedTerm) || alert.message.toLowerCase().includes(normalizedTerm) || alert.severity.toLowerCase().includes(normalizedTerm))
-                    : alerts;
-
-                if (filteredAlerts.length === 0) {
-                    container.innerHTML = '<div class="rounded-lg bg-surface-container-low/50 p-4 text-on-surface-variant">Supervisa eventos críticos y responde a las notificaciones más recientes.</div>';
-                    return;
-                }
-
-                container.innerHTML = filteredAlerts.map(formatAlertCard).join('');
-            }
-
-            function renderKpis(kpis) {
-                document.getElementById('kpi-deforestation').textContent = kpis.deforestation.toLocaleString();
-                document.getElementById('kpi-deforestation-change').textContent = kpis.deforestationChange;
-                document.getElementById('kpi-deforestation-progress').style.width = kpis.deforestationProgress + '%';
-                document.getElementById('kpi-active-alerts').textContent = kpis.activeAlerts;
-                document.getElementById('kpi-sensors-online').textContent = kpis.sensorsOnline;
-                document.getElementById('kpi-carbon-sequestration').textContent = kpis.carbonSequestration;
-            }
-
-            function renderChart(state) {
-                impactChart.data.labels = state.chart.labels;
-                impactChart.data.datasets[0].data = state.chart.incidents;
-                impactChart.data.datasets[1].data = state.chart.previousWeek;
-                impactChart.update();
-            }
-
-            let leafletMap;
-            function initLeafletMap() {
-                const mapContainer = document.getElementById('leafletMap');
-                if (!mapContainer || leafletMap) return;
-
-                leafletMap = L.map(mapContainer, {
-                    center: [-3.7437, -73.2516],
-                    zoom: 12,
-                    zoomControl: false,
-                    attributionControl: false
-                });
-
-                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                    maxZoom: 19,
-                    attribution: '&copy; OpenStreetMap contributors'
-                }).addTo(leafletMap);
-
-                L.marker([-3.7437, -73.2516])
-                    .addTo(leafletMap)
-                    .bindPopup('Iquitos, Perú')
-                    .openPopup();
-            }
-
-            function refreshLeafletMap() {
-                if (leafletMap) {
-                    setTimeout(() => {
-                        leafletMap.invalidateSize();
-                    }, 200);
-                }
-            }
-
-            const whatsappNumber = '51956359772';
-            const whatsappReports = [
-                'Estudio Iquitos diciembre 2009',
-                'Informe semanal de impacto',
-                'Reporte de sensores',
-                'Resumen de alertas'
-            ];
-            const tabNames = {
-                dashboard: 'Tablero',
-                map: 'Mapa Ecológico',
-                alerts: 'Centro de alertas',
-                reports: 'Informes científicos',
-                sensors: 'Malla de sensores'
-            };
-
-            function buildWhatsAppMessage(state) {
-                const currentDate = new Date();
-                const formattedDate = currentDate.toLocaleString('es-PE', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit'
-                });
-                const alertLines = state.alerts.slice(0, 6).map(alert => `• ${alert.severity} | ${alert.title} | ${alert.time}`);
-                const reportLines = whatsappReports.map(report => `- ${report}`);
-                const searchInfo = state.search ? `Filtro de búsqueda activo: "${state.search}"` : 'No hay filtro de búsqueda activo.';
-                const message = [
-                    'Greentech Amazon Systems - Mensaje automático de estado desde Iquitos, Loreto.',
-                    `Fecha: ${formattedDate}`,
-                    `Pantalla actual: ${tabNames[state.activeTab] || state.activeTab}`,
-                    '',
-                    'Métricas clave:',
-                    `• Deforestación total detectada: ${state.kpis.deforestation.toLocaleString()} ha`,
-                    `• Cambio estimado: ${state.kpis.deforestationChange}`,
-                    `• Progreso de monitoreo: ${state.kpis.deforestationProgress}%`,
-                    `• Alertas activas: ${state.kpis.activeAlerts}`,
-                    `• Sensores en línea: ${state.kpis.sensorsOnline}`,
-                    `• Secuestro de carbono estimado: ${state.kpis.carbonSequestration}`,
-                    '',
-                    'Alertas recientes:',
-                    ...alertLines,
-                    '',
-                    'Reportes disponibles:',
-                    ...reportLines,
-                    '',
-                    searchInfo,
-                    '',
-                    'Acción recomendada: revisar inmediatamente los puntos críticos de Iquitos y coordinar patrullaje adicional.'
-                ].join('\n');
-                return `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
-            }
-
-            function initWhatsAppButton(state) {
-                const sendAlertsButton = document.getElementById('btn-send-alerts');
-                if (!sendAlertsButton) return;
-                sendAlertsButton.addEventListener('click', () => {
-                    window.open(buildWhatsAppMessage(state), '_blank');
-                });
-            }
-
-            function generateRandomAlert() {
-                const items = [
-                    {
-                        severity: 'CRÍTICO',
-                        icon: 'warning',
-                        colorClass: 'border-emergency-red-border',
-                        badgeClass: 'bg-error/10 text-error',
-                        title: 'Pico térmico: Sector I-12',
-                        message: 'Posible quema ilegal detectada. Respuesta dron iniciada.',
-                        time: '2m'
-                    },
-                    {
-                        severity: 'ADVERTENCIA',
-                        icon: 'sensors',
-                        colorClass: 'border-tertiary',
-                        badgeClass: 'bg-tertiary/10 text-tertiary',
-                        title: 'Sensor desconectado: X-Alpha 4',
-                        message: 'Señal perdida en Iquitos, región Loreto. Revisión técnica pendiente.',
-                        time: '14m'
-                    },
-                    {
-                        severity: 'RESUELTO',
-                        icon: 'check_circle',
-                        colorClass: 'border-primary',
-                        badgeClass: 'bg-primary/10 text-primary',
-                        title: 'Reforestación verificada',
-                        message: 'Plantones del vivero del sector B-4 en Loreto confirmados por satélite.',
-                        time: '1h'
-                    },
-                    {
-                        severity: 'ADVERTENCIA',
-                        icon: 'water_drop',
-                        colorClass: 'border-tertiary',
-                        badgeClass: 'bg-tertiary/10 text-tertiary',
-                        title: 'Humedad baja detectada',
-                        message: 'Condiciones extremadamente secas en la cuenca superior. Riesgo de incendio en aumento.',
-                        time: '4h'
-                    }
-                ];
-                return items[Math.floor(Math.random() * items.length)];
-            }
-
-            function updateStateWithSimulation(state) {
-                state.kpis.deforestation += Math.floor(Math.random() * 30 + 5);
-                state.kpis.activeAlerts = Math.max(1, state.kpis.activeAlerts + Math.floor(Math.random() * 5 - 2));
-                state.kpis.sensorsOnline = (99 + Math.random() * 0.8).toFixed(1) + '%';
-                state.kpis.carbonSequestration = (parseFloat(state.kpis.carbonSequestration) + Math.random() * 0.2).toFixed(1) + 'k';
-                state.kpis.deforestationProgress = Math.min(100, state.kpis.deforestationProgress + Math.floor(Math.random() * 4 + 1));
-
-                state.chart.incidents = state.chart.incidents.map(value => Math.max(80, value + Math.floor(Math.random() * 21 - 10)));
-                state.chart.previousWeek = state.chart.previousWeek.map(value => Math.max(80, value + Math.floor(Math.random() * 17 - 8)));
-
-                state.alerts.unshift(generateRandomAlert());
-                if (state.alerts.length > 6) {
-                    state.alerts.pop();
-                }
-
-                state.search = searchInput.value.trim();
-                return state;
-            }
-
-            function renderState(state) {
-                renderKpis(state.kpis);
-                renderAlerts(state.alerts, state.search, 'alertsContainer');
-                renderAlerts(state.alerts, state.search, 'dashboardAlertsContainer');
-                renderChart(state);
-                if (searchInput) {
-                    searchInput.value = state.search;
-                }
-            }
-
-            function init() {
-                let state = loadState();
-                if (!state || !state.alerts) {
-                    state = defaultState;
-                }
-                if (!state.activeTab) {
-                    state.activeTab = 'dashboard';
-                }
-                renderState(state);
-                setActiveTab(state.activeTab, state);
-                if (state.activeTab === 'map') {
-                    setTimeout(() => {
-                        initLeafletMap();
-                        refreshLeafletMap();
-                    }, 50);
-                }
-                saveState(state);
-
-                tabButtons.forEach(button => {
-                    button.addEventListener('click', event => {
-                        event.preventDefault();
-                        const tabId = button.dataset.tab;
-                        if (!tabId) return;
-                        setActiveTab(tabId, state);
-                    });
-                });
-
-                if (searchInput) {
-                    searchInput.addEventListener('input', () => {
-                        state.search = searchInput.value.trim();
-                        saveState(state);
-                        renderAlerts(state.alerts, state.search, 'alertsContainer');
-                        renderAlerts(state.alerts, state.search, 'dashboardAlertsContainer');
-                    });
-                }
-
-                refreshButton.addEventListener('click', () => {
-                    state = loadState();
-                    state = updateStateWithSimulation(state);
-                    saveState(state);
-                    renderState(state);
-                    setActiveTab(state.activeTab, state);
-                });
-
-                resetButton.addEventListener('click', () => {
-                    localStorage.removeItem(STORAGE_KEY);
-                    state = defaultState;
-                    saveState(state);
-                    renderState(state);
-                    setActiveTab(state.activeTab, state);
-                });
-
-                initWhatsAppButton(state);
-            }
-
-            init();
-        });
-    </script>
+<script src="app.js"></script>
 </body></html>
